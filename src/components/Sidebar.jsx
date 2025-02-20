@@ -15,12 +15,14 @@ import {
     LogOut,
     User,
 } from "lucide-react"
+import { useNavigate } from "react-router"
 
 const Sidebar = () => {
     const [isOpen, setIsOpen] = useState(true)
     const [isDark, setIsDark] = useState(false)
     const [isProfileOpen, setIsProfileOpen] = useState(false)
-    const [activeCategory, setActiveCategory] = useState("dashboard")
+    const [activeCategory, setActiveCategory] = useState("/")
+    const navigate = useNavigate()
     useEffect(() => {
         const theme = localStorage.getItem("theme")
         if (theme === "dark") {
@@ -42,10 +44,7 @@ const Sidebar = () => {
         }
     }
     const categories = [
-        { id: "dashboard", label: "Dashboard", icon: ListTodo },
-        { id: "todo", label: "To-Do", icon: ListTodo },
-        { id: "progress", label: "In Progress", icon: Clock },
-        { id: "done", label: "Done", icon: CheckSquare },
+        { id: "/", label: "Dashboard", icon: ListTodo },
     ]
     const sidebarVariants = {
         open: {
@@ -173,7 +172,10 @@ const Sidebar = () => {
                             return (
                                 <button
                                     key={category.id}
-                                    onClick={() => setActiveCategory(category.id)}
+                                    onClick={() => {
+                                        setActiveCategory(category.id)
+                                        navigate(category.id)
+                                    }}
                                     className={`
                     w-full flex items-center px-3 py-2 rounded-lg
                     transition-all duration-200 group
