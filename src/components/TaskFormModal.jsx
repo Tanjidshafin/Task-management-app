@@ -1,8 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { motion } from "framer-motion"
 import { X, Save } from "lucide-react"
+import { AppContext } from "../context/AppContext"
 
 const categories = {
     "To-Do": { color: "bg-blue-500" },
@@ -11,7 +12,8 @@ const categories = {
 }
 
 const TaskFormModal = ({ task, onClose, onSubmit }) => {
-    const [formData, setFormData] = useState(task ? { ...task } : { title: "", description: "", category: "To-Do" })
+    const { user } = useContext(AppContext)
+    const [formData, setFormData] = useState(task ? { ...task } : { title: "", description: "", category: "To-Do", email: user.email })
 
     const handleSubmit = (e) => {
         e.preventDefault()

@@ -3,18 +3,19 @@
 import { useState } from "react"
 import { AnimatePresence } from "framer-motion"
 import { DndContext, DragOverlay, useSensor, useSensors, PointerSensor } from "@dnd-kit/core"
+import { arrayMove } from "@dnd-kit/sortable"
 import UseTasks from "../hooks/UseTasks"
 import TaskColumn from "../components/TaskColumn"
 import TaskFormModal from "../components/TaskFormModal"
-
 
 const categories = {
   "To-Do": { color: "bg-blue-500" },
   "In Progress": { color: "bg-yellow-500" },
   Done: { color: "bg-green-500" },
 }
+
 const TaskBoard = () => {
-  const { tasks, isFetching, addTask, updateTask, deleteTask } = UseTasks()
+  const { tasks, isFetching, addTask, updateTask, deleteTask, reorderTasks } = UseTasks()
   const [activeTask, setActiveTask] = useState(null)
   const [modalTask, setModalTask] = useState(null)
   const [showAddModal, setShowAddModal] = useState(false)
@@ -44,8 +45,20 @@ const TaskBoard = () => {
     if (!activeTask) return
 
     if (overTask) {
-      const updatedTask = { ...activeTask, category: overTask.category }
-      updateTask.mutate(updatedTask)
+      if (activeTask.category === overTask.category) {
+        const tasksInCategory = tasks.filter((t) => t.category === activeTask.category)
+        const oldIndex = tasksInCategory.findIndex((t) => t._id === activeTask._id)
+        const newIndex = tasksInCategory.findIndex((t) => t._id === overTask._id)
+        const reorderedTasks = arrayMove(tasksInCategory, oldIndex, newIndex)
+
+        reorderTasks.mutate({
+          category: activeTask.category,
+          taskIds: reorderedTasks.map((t) => t._id),
+        })
+      } else {
+        const updatedTask = { ...activeTask, category: overTask.category }
+        updateTask.mutate(updatedTask)
+      }
     } else {
       const updatedTask = { ...activeTask, category: over.id }
       updateTask.mutate(updatedTask)
@@ -71,7 +84,7 @@ const TaskBoard = () => {
   }
 
   const getTasksByCategory = (category) => {
-    return tasks.filter((task) => task.category === category)
+    return tasks.filter((task) => task.category === category).sort((a, b) => a.order - b.order)
   }
 
   return (

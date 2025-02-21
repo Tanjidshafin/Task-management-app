@@ -1,9 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import axios from "axios"
+import { useContext } from "react"
+import { AppContext } from "../context/AppContext"
+
 const API_URL = "https://task-backend-psi-ten.vercel.app"
+
 const UseTasks = () => {
   const queryClient = useQueryClient()
-
+  const { user } = useContext(AppContext)
   const {
     data: tasks = [],
     refetch,
@@ -12,7 +16,8 @@ const UseTasks = () => {
     queryKey: ["tasks"],
     queryFn: async () => {
       const res = await axios.get(`${API_URL}/tasks`)
-      return res.data
+      const filteredTasks = res.data.filter(task => task.email === user.email)
+      return filteredTasks
     },
   })
 
@@ -31,7 +36,12 @@ const UseTasks = () => {
     onSuccess: () => queryClient.invalidateQueries(["tasks"]),
   })
 
-  return { tasks, refetch, isFetching, addTask, updateTask, deleteTask }
+  const reorderTasks = useMutation({
+    mutationFn: (reorderData) => axios.post(`${API_URL}/tasks/reorder`, reorderData),
+    onSuccess: () => queryClient.invalidateQueries(["tasks"]),
+  })
+
+  return { tasks, refetch, isFetching, addTask, updateTask, deleteTask, reorderTasks }
 }
 
 export default UseTasks
