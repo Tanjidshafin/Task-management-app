@@ -162,7 +162,7 @@ const Sidebar = () => {
                         </div>
                         <div>
                             <h3 className="font-medium text-gray-900 dark:text-white">{user.displayName}</h3>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">{user.email}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">{user.email}</p>
                         </div>
                     </div>
 

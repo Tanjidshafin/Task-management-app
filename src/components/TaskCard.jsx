@@ -2,7 +2,7 @@
 import { motion } from "framer-motion"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { Edit, Trash2, GripVertical } from "lucide-react"
+import { Edit, Trash2, GripVertical, Calendar } from "lucide-react"
 
 const TaskCard = ({ task, onEdit, onDelete }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: task._id })
@@ -10,6 +10,10 @@ const TaskCard = ({ task, onEdit, onDelete }) => {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
+  }
+  const isOverdue = task.dueDate && new Date(task.dueDate) < new Date()
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })
   }
 
   return (
@@ -54,9 +58,13 @@ const TaskCard = ({ task, onEdit, onDelete }) => {
         </div>
       </div>
       <div className="flex items-center justify-between mt-2">
-        <span className="text-xs text-gray-400 dark:text-gray-500">
-          {new Date(task.timestamp).toLocaleDateString()}
-        </span>
+        <span className="text-xs text-gray-400 dark:text-gray-500">{formatDate(task.timestamp)}</span>
+        {task.dueDate && (
+          <div className={`flex items-center text-xs ${isOverdue ? "text-red-500" : "text-green-500"}`}>
+            <Calendar size={12} className="mr-1" />
+            <span>{formatDate(task.dueDate)}</span>
+          </div>
+        )}
       </div>
     </motion.div>
   )

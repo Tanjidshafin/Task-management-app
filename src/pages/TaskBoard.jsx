@@ -82,8 +82,10 @@ const TaskBoard = () => {
   const handleAddOrEditTask = (taskData) => {
     if (taskData._id) {
       updateTask.mutate(taskData)
+      setNotification("Task has been updated")
     } else {
       addTask.mutate(taskData)
+      setNotification("Task has been added")
     }
     setModalTask(null)
     setShowAddModal(false)
@@ -91,6 +93,7 @@ const TaskBoard = () => {
 
   const handleDeleteTask = (taskId) => {
     deleteTask.mutate(taskId)
+    setNotification("Task has been deleted")
   }
 
   const getTasksByCategory = (category) => {
