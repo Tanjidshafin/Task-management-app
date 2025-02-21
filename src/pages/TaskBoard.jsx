@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { AnimatePresence } from "framer-motion"
-import { DndContext, DragOverlay, useSensor, useSensors, PointerSensor } from "@dnd-kit/core"
+import { DndContext, DragOverlay, useSensor, useSensors, PointerSensor, TouchSensor } from "@dnd-kit/core"
 import { arrayMove } from "@dnd-kit/sortable"
 import UseTasks from "../hooks/UseTasks"
 import TaskColumn from "../components/TaskColumn"
@@ -26,6 +26,12 @@ const TaskBoard = () => {
         distance: 8,
       },
     }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
+      },
+    }),
   )
 
   const handleDragStart = (event) => {
@@ -46,6 +52,7 @@ const TaskBoard = () => {
 
     if (overTask) {
       if (activeTask.category === overTask.category) {
+        // Reordering within the same category
         const tasksInCategory = tasks.filter((t) => t.category === activeTask.category)
         const oldIndex = tasksInCategory.findIndex((t) => t._id === activeTask._id)
         const newIndex = tasksInCategory.findIndex((t) => t._id === overTask._id)
@@ -56,10 +63,12 @@ const TaskBoard = () => {
           taskIds: reorderedTasks.map((t) => t._id),
         })
       } else {
+        // Moving to a different category
         const updatedTask = { ...activeTask, category: overTask.category }
         updateTask.mutate(updatedTask)
       }
     } else {
+      // Dropping onto a column (over.id is the category name)
       const updatedTask = { ...activeTask, category: over.id }
       updateTask.mutate(updatedTask)
     }
