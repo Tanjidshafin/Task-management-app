@@ -64,7 +64,7 @@ const Profile = () => {
                                     <div className="flex items-center gap-4 mt-3">
                                         <div className="flex items-center text-gray-600 dark:text-gray-400">
                                             <MapPin className="w-4 h-4 mr-1" />
-                                            <span className="text-sm">California, United States</span>
+                                            <span className="text-sm">Feni, Bangladesh</span>
                                         </div>
                                         <div className="flex items-center text-gray-600 dark:text-gray-400">
                                             <Building2 className="w-4 h-4 mr-1" />
@@ -84,19 +84,6 @@ const Profile = () => {
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-
-                    <div className="mt-8 border-t dark:border-gray-700">
-                        <div className="flex gap-6 mt-6">
-                            {tabs.map((tab) => (
-                                <button
-                                    key={tab.id}
-                                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-medium pb-4 border-b-2 border-transparent hover:border-emerald-500 transition-all"
-                                >
-                                    {tab.label}
-                                </button>
-                            ))}
                         </div>
                     </div>
                 </motion.div>
