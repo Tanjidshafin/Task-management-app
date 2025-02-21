@@ -90,7 +90,7 @@
  ┗ 📜 .gitignore
 ```
 
-`</details>`---
+`</details>`
 
 # ⚡ Installation & Setup
 
@@ -168,5 +168,5 @@ Contributions are welcome! Feel free to **fork** the repo and submit a **PR**.
 ---
 
 <div align="center">
-  Made with ❤️ by [Tanjid Karim Shafin](https://github.com/Tanjidshafin)
+  Made with ❤️ by <a href="https://github.com/Tanjidshafin">Tanjid Karim Shafin</a>
 </div>
