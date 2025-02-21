@@ -61,15 +61,11 @@ const AppContextProvider = ({ children }) => {
             })
             .finally(() => setLoading(false));
     };
-    if (loading) { 
-        return <div>loading....</div>
-    }
     const value = {
         isDarkMode,
         toggleDarkMode,
         handleGoogle,
         user
-
     };
 
     return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

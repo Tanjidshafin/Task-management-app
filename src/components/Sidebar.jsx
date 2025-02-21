@@ -4,16 +4,30 @@ import { Menu, X, ChevronRight, MoreVertical, Sun, Moon, ListTodo, LogOut, User 
 import { AppContext } from "../context/AppContext";
 import { NavLink, useNavigate, useLocation } from "react-router";
 import { signOut } from "firebase/auth";
-import { auth } from "../../firebase.init";
 import Swal from "sweetalert2";
+import { auth } from "../../firebase.init";
 
 const Sidebar = () => {
-    const [isOpen, setIsOpen] = useState(true);
+    const [isOpen, setIsOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [activeCategory, setActiveCategory] = useState("/");
     const { isDarkMode, toggleDarkMode, user } = useContext(AppContext);
     const navigate = useNavigate();
     const location = useLocation();
+
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth >= 768) {
+                setIsOpen(true);
+            } else {
+                setIsOpen(false);
+            }
+        };
+
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const handleLogout = () => {
         Swal.fire({
@@ -84,6 +98,26 @@ const Sidebar = () => {
         setActiveCategory(location.pathname);
     }, [location]);
 
+    useEffect(() => {
+        setIsProfileOpen(false)
+        if (window.innerWidth < 768) {
+            setIsOpen(false)
+        }
+    }, [activeCategory])
+
+    if (!user) {
+        return (
+            <div className="fixed left-0 top-0 h-screen w-[280px] bg-white dark:bg-[#0F1729] shadow-lg animate-pulse">
+                <div className="h-16 bg-gray-200 dark:bg-gray-700 mb-4"></div>
+                <div className="px-4 space-y-4">
+                    {[...Array(5)].map((_, i) => (
+                        <div key={i} className="h-10 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                    ))}
+                </div>
+            </div>
+        );
+    }
+
     return (
         <>
             <AnimatePresence>
@@ -138,12 +172,6 @@ const Sidebar = () => {
                             className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
                         >
                             <MoreVertical size={20} className="text-gray-500 dark:text-gray-400" />
-                        </button>
-                        <button
-                            onClick={() => setIsOpen(false)}
-                            className="md:hidden p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
-                        >
-                            <X size={20} className="text-gray-500 dark:text-gray-400" />
                         </button>
                     </div>
                     <AnimatePresence>
