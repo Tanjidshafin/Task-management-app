@@ -8,13 +8,16 @@ import {
   QueryClientProvider,
 
 } from '@tanstack/react-query'
+import AppContextProvider from './context/AppContext.jsx'
 const queryClient = new QueryClient()
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
-      <QueryClientProvider client={queryClient}>
-        <App />
-      </QueryClientProvider>
+      <AppContextProvider>
+        <QueryClientProvider client={queryClient}>
+          <App />
+        </QueryClientProvider>
+      </AppContextProvider>
     </BrowserRouter>
   </StrictMode>,
 )

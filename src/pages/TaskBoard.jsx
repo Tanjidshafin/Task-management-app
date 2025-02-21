@@ -75,7 +75,7 @@ const TaskBoard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-950 p-6">
+    <div className="min-h-screen pt-20 bg-gray-100 dark:bg-gray-950 p-6">
       <DndContext
         sensors={sensors}
         onDragStart={handleDragStart}

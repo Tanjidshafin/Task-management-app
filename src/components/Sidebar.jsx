@@ -1,51 +1,19 @@
-"use client"
+import React, { useState, useEffect, useContext } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Menu, X, ChevronRight, MoreVertical, Sun, Moon, ListTodo, LogOut, User } from 'lucide-react';
+import { AppContext } from "../context/AppContext";
 
-import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import {
-    Menu,
-    X,
-    ChevronRight,
-    MoreVertical,
-    Sun,
-    Moon,
-    CheckSquare,
-    Clock,
-    ListTodo,
-    LogOut,
-    User,
-} from "lucide-react"
-import { useNavigate } from "react-router"
 
 const Sidebar = () => {
-    const [isOpen, setIsOpen] = useState(true)
-    const [isDark, setIsDark] = useState(false)
-    const [isProfileOpen, setIsProfileOpen] = useState(false)
-    const [activeCategory, setActiveCategory] = useState("/")
-    const navigate = useNavigate()
-    useEffect(() => {
-        const theme = localStorage.getItem("theme")
-        if (theme === "dark") {
-            setIsDark(true)
-            document.documentElement.setAttribute("data-theme", "dark")
-            document.documentElement.classList.add("dark")
-        }
-    }, [])
-    const toggleTheme = () => {
-        setIsDark(!isDark)
-        if (!isDark) {
-            document.documentElement.setAttribute("data-theme", "dark")
-            document.documentElement.classList.add("dark")
-            localStorage.setItem("theme", "dark")
-        } else {
-            document.documentElement.setAttribute("data-theme", "light")
-            document.documentElement.classList.remove("dark")
-            localStorage.setItem("theme", "light")
-        }
-    }
+    const [isOpen, setIsOpen] = useState(true);
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const [activeCategory, setActiveCategory] = useState("/");
+    const { isDarkMode, toggleDarkMode } = useContext(AppContext);
+
     const categories = [
         { id: "/", label: "Dashboard", icon: ListTodo },
-    ]
+    ];
+
     const sidebarVariants = {
         open: {
             x: 0,
@@ -63,7 +31,8 @@ const Sidebar = () => {
                 damping: 30,
             },
         },
-    }
+    };
+
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (
@@ -72,16 +41,16 @@ const Sidebar = () => {
                 !event.target.closest(".menu-trigger") &&
                 window.innerWidth < 768
             ) {
-                setIsOpen(false)
+                setIsOpen(false);
             }
             if (isProfileOpen && !event.target.closest(".profile-dropdown")) {
-                setIsProfileOpen(false)
+                setIsProfileOpen(false);
             }
-        }
+        };
 
-        document.addEventListener("mousedown", handleClickOutside)
-        return () => document.removeEventListener("mousedown", handleClickOutside)
-    }, [isOpen, isProfileOpen])
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [isOpen, isProfileOpen]);
 
     return (
         <>
@@ -107,13 +76,13 @@ const Sidebar = () => {
                 animate={isOpen ? "open" : "closed"}
                 variants={sidebarVariants}
                 className={`
-          sidebar fixed left-0 top-0 h-screen w-[280px]
-          bg-white dark:bg-[#0F1729]
-          z-50 flex flex-col
-          transition-colors duration-200 ease-in-out
-          md:translate-x-0
-          shadow-lg
-        `}
+                    sidebar fixed left-0 top-0 h-screen w-[280px]
+                    bg-white dark:bg-[#0F1729]
+                    z-50 flex flex-col
+                    transition-colors duration-200 ease-in-out
+                    md:translate-x-0
+                    shadow-lg
+                `}
             >
                 <div className="relative flex items-center p-4 border-b dark:border-gray-800">
                     <div className="flex items-center space-x-3">
@@ -168,54 +137,53 @@ const Sidebar = () => {
                 <div className="flex-1 py-4 overflow-y-auto">
                     <div className="space-y-1 px-3">
                         {categories.map((category) => {
-                            const Icon = category.icon
+                            const Icon = category.icon;
                             return (
                                 <button
                                     key={category.id}
                                     onClick={() => {
-                                        setActiveCategory(category.id)
-                                        navigate(category.id)
+                                        setActiveCategory(category.id);
                                     }}
                                     className={`
-                    w-full flex items-center px-3 py-2 rounded-lg
-                    transition-all duration-200 group
-                    ${activeCategory === category.id
+                                        w-full flex items-center px-3 py-2 rounded-lg
+                                        transition-all duration-200 group
+                                        ${activeCategory === category.id
                                             ? "bg-blue-600 text-white"
                                             : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                                         }
-                  `}
+                                    `}
                                 >
                                     <Icon size={20} className="shrink-0" />
                                     <span className="ml-3 flex-1">{category.label}</span>
                                     <ChevronRight
                                         size={16}
                                         className={`
-                      transition-transform duration-200
-                      ${activeCategory === category.id ? "rotate-90" : ""}
-                    `}
+                                            transition-transform duration-200
+                                            ${activeCategory === category.id ? "rotate-90" : ""}
+                                        `}
                                     />
                                 </button>
-                            )
+                            );
                         })}
                     </div>
                 </div>
                 <div className="p-4 border-t dark:border-gray-800">
                     <motion.div
                         className="w-full h-12 bg-gray-100 dark:bg-gray-800/50 rounded-lg p-1.5 cursor-pointer"
-                        onClick={toggleTheme}
+                        onClick={toggleDarkMode}
                     >
                         <motion.div className="relative w-full h-full flex items-center" initial={false}>
                             <motion.div
                                 className="absolute w-[50%] h-full bg-white dark:bg-gray-700 rounded-md shadow-sm"
-                                animate={{ x: isDark ? "100%" : "0%" }}
+                                animate={{ x: isDarkMode ? "100%" : "0%" }}
                                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
                             />
                             <div className="flex items-center justify-around w-full relative z-10">
-                                <div className={`flex items-center space-x-2 ${!isDark ? "text-gray-900" : "text-gray-400"}`}>
+                                <div className={`flex items-center space-x-2 ${!isDarkMode ? "text-gray-900" : "text-gray-400"}`}>
                                     <Sun size={16} />
                                     <span className="text-sm font-medium">Light</span>
                                 </div>
-                                <div className={`flex items-center space-x-2 ${isDark ? "text-white" : "text-gray-400"}`}>
+                                <div className={`flex items-center space-x-2 ${isDarkMode ? "text-white" : "text-gray-400"}`}>
                                     <Moon size={16} />
                                     <span className="text-sm font-medium">Dark</span>
                                 </div>
@@ -225,8 +193,7 @@ const Sidebar = () => {
                 </div>
             </motion.aside>
         </>
-    )
-}
+    );
+};
 
-export default Sidebar
-
+export default Sidebar;
