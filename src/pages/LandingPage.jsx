@@ -8,7 +8,8 @@ const LandingPage = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const { isDarkMode, toggleDarkMode } = useContext(AppContext);
-
+    const { handleGoogle } = useContext(AppContext)
+    const [loading, setLoading] = useState(false)
     const fadeInUp = {
         initial: { opacity: 0, y: 20 },
         animate: { opacity: 1, y: 0 },
@@ -45,10 +46,23 @@ const LandingPage = () => {
                                     </a>
                                 ))}
                                 <button
-                                    onClick={() => setIsModalOpen(true)}
+                                    onClick={async () => {
+                                        try {
+                                            setLoading(true)
+                                            const user = await handleGoogle();
+                                            if (user) {
+                                                setIsModalOpen(true);
+                                            }
+                                        } catch (error) {
+                                            console.error(error);
+                                        } finally {
+                                            setLoading(false)
+                                            setIsMenuOpen(false);
+                                        }
+                                    }}
                                     className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 transition-colors duration-200"
                                 >
-                                    Get Started
+                                    {loading ? (<div className="flex items-center gap-1"><span className="loading loading-spinner loading-sm"></span> Getting Started...</div>) : "Get Started"}
                                 </button>
                                 <button onClick={toggleDarkMode} className="text-gray-600 dark:text-gray-300">
                                     {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
@@ -83,13 +97,23 @@ const LandingPage = () => {
                                 </a>
                             ))}
                             <button
-                                onClick={() => {
-                                    setIsModalOpen(true);
-                                    setIsMenuOpen(false);
+                                onClick={async () => {
+                                    try {
+                                        setLoading(true)
+                                        const user = await handleGoogle();
+                                        if (user) {
+                                            setIsModalOpen(true);
+                                        }
+                                    } catch (error) {
+                                        console.error(error);
+                                    } finally {
+                                        setIsMenuOpen(false);
+                                        setLoading(false)
+                                    }
                                 }}
                                 className="block w-full text-left px-3 py-2 text-indigo-600 dark:text-indigo-400 font-medium"
                             >
-                                Get Started
+                                {loading ? (<div className="flex items-center gap-1"><span className="loading loading-spinner loading-xs"></span> Getting Started...</div>) : "Get Started"}
                             </button>
                         </div>
                     </motion.div>
@@ -180,9 +204,22 @@ const LandingPage = () => {
                                 <button
                                     type="button"
                                     className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm dark:bg-indigo-500 dark:hover:bg-indigo-600"
-                                    onClick={() => setIsModalOpen(false)}
+                                    onClick={async () => {
+                                        try {
+                                            setLoading(true)
+                                            const user = await handleGoogle();
+                                            if (user) {
+                                                setIsModalOpen(true);
+                                            }
+                                        } catch (error) {
+                                            console.error(error);
+                                        } finally {
+                                            setIsMenuOpen(false);
+                                            setLoading(false)
+                                        }
+                                    }}
                                 >
-                                    Sign in with Google
+                                    {loading ? (<div className="flex items-center gap-1"><span className="loading loading-spinner loading-sm"></span> Signing In......</div>) : "Sign In with Google"}
                                 </button>
                             </div>
                         </div>

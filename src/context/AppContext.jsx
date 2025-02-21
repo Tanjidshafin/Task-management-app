@@ -1,13 +1,25 @@
-import React, { createContext, useState, useEffect } from "react";
-
+import React, { createContext, useState, useEffect, use } from "react";
+import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup } from "firebase/auth";
+import { auth } from "../../firebase.init";
+import { useNavigate } from "react-router";
 export const AppContext = createContext();
 
 const AppContextProvider = ({ children }) => {
     const [isDarkMode, setIsDarkMode] = useState(false);
-
+    const provider = new GoogleAuthProvider();
+    const [loading, setLoading] = useState(true)
+    const [user, setUser] = useState(null);
+    const navigate = useNavigate()
+    useEffect(() => {
+        const loggedInUser = JSON.parse(localStorage.getItem('user'));
+        if (loggedInUser) {
+            setUser(loggedInUser);
+        }
+        setLoading(false);
+    }, []);
     useEffect(() => {
         const savedTheme = localStorage.getItem("theme");
-        if (savedTheme === "dark" || (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+        if (savedTheme === "dark") {
             setIsDarkMode(true);
             document.documentElement.classList.add("dark");
             document.documentElement.setAttribute("data-theme", "dark");
@@ -17,7 +29,14 @@ const AppContextProvider = ({ children }) => {
             document.documentElement.setAttribute("data-theme", "light");
         }
     }, []);
-
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            setUser(currentUser);
+            localStorage.setItem("user", JSON.stringify(currentUser))
+            setLoading(false);
+        });
+        return () => unsubscribe();
+    }, []);
     const toggleDarkMode = () => {
         setIsDarkMode((prevMode) => {
             const newMode = !prevMode;
@@ -33,10 +52,24 @@ const AppContextProvider = ({ children }) => {
             return newMode;
         });
     };
-
+    const handleGoogle = () => {
+        setLoading(true);
+        return signInWithPopup(auth, provider)
+            .then((res) => {
+                setUser(res.user);
+                navigate("/")
+            })
+            .finally(() => setLoading(false));
+    };
+    if (loading) { 
+        return <div>loading....</div>
+    }
     const value = {
         isDarkMode,
-        toggleDarkMode
+        toggleDarkMode,
+        handleGoogle,
+        user
+
     };
 
     return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

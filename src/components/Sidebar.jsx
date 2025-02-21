@@ -2,13 +2,41 @@ import React, { useState, useEffect, useContext } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ChevronRight, MoreVertical, Sun, Moon, ListTodo, LogOut, User } from 'lucide-react';
 import { AppContext } from "../context/AppContext";
-
+import { NavLink, useNavigate, useLocation } from "react-router";
+import { signOut } from "firebase/auth";
+import { auth } from "../../firebase.init";
+import Swal from "sweetalert2";
 
 const Sidebar = () => {
     const [isOpen, setIsOpen] = useState(true);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [activeCategory, setActiveCategory] = useState("/");
-    const { isDarkMode, toggleDarkMode } = useContext(AppContext);
+    const { isDarkMode, toggleDarkMode, user } = useContext(AppContext);
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const handleLogout = () => {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, Logout!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: "Logged Out!",
+                    text: `${user.displayName} has been Logged Out.`,
+                    icon: "success"
+                });
+                signOut(auth)
+                localStorage.removeItem("user")
+                navigate("/getstarted")
+            }
+        });
+    }
 
     const categories = [
         { id: "/", label: "Dashboard", icon: ListTodo },
@@ -52,6 +80,10 @@ const Sidebar = () => {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [isOpen, isProfileOpen]);
 
+    useEffect(() => {
+        setActiveCategory(location.pathname);
+    }, [location]);
+
     return (
         <>
             <AnimatePresence>
@@ -88,15 +120,15 @@ const Sidebar = () => {
                     <div className="flex items-center space-x-3">
                         <div className="relative">
                             <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-200 dark:border-gray-700">
-                                <img src="/placeholder.svg?height=40&width=40" alt="Profile" className="w-full h-full object-cover" />
+                                <img src={user.photoURL || "/placeholder.svg"} alt="" className="w-full h-full object-cover" />
                             </div>
                             <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-[#0F1729] rounded-full flex items-center justify-center">
                                 <Moon size={12} className="text-gray-300" />
                             </div>
                         </div>
                         <div>
-                            <h3 className="font-medium text-gray-900 dark:text-white">John Doe</h3>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">Project Manager</p>
+                            <h3 className="font-medium text-gray-900 dark:text-white">{user.displayName}</h3>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">{user.email}</p>
                         </div>
                     </div>
 
@@ -122,11 +154,11 @@ const Sidebar = () => {
                                 exit={{ opacity: 0, y: -10 }}
                                 className="profile-dropdown absolute z-50 top-16 right-4 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-1 border border-gray-200 dark:border-gray-700"
                             >
-                                <button className="w-full px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center space-x-2">
+                                <NavLink to="/profile" className="w-full px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center space-x-2">
                                     <User size={16} className="text-gray-500 dark:text-gray-400" />
                                     <span className="text-gray-700 dark:text-gray-200">Profile</span>
-                                </button>
-                                <button className="w-full px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center space-x-2">
+                                </NavLink>
+                                <button onClick={handleLogout} className="w-full px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center space-x-2">
                                     <LogOut size={16} className="text-red-500" />
                                     <span className="text-red-500">Logout</span>
                                 </button>
@@ -139,11 +171,9 @@ const Sidebar = () => {
                         {categories.map((category) => {
                             const Icon = category.icon;
                             return (
-                                <button
+                                <NavLink
                                     key={category.id}
-                                    onClick={() => {
-                                        setActiveCategory(category.id);
-                                    }}
+                                    to={category.id}
                                     className={`
                                         w-full flex items-center px-3 py-2 rounded-lg
                                         transition-all duration-200 group
@@ -152,6 +182,7 @@ const Sidebar = () => {
                                             : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                                         }
                                     `}
+                                    onClick={() => setActiveCategory(category.id)}
                                 >
                                     <Icon size={20} className="shrink-0" />
                                     <span className="ml-3 flex-1">{category.label}</span>
@@ -162,7 +193,7 @@ const Sidebar = () => {
                                             ${activeCategory === category.id ? "rotate-90" : ""}
                                         `}
                                     />
-                                </button>
+                                </NavLink>
                             );
                         })}
                     </div>
