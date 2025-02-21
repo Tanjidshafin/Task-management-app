@@ -7,6 +7,7 @@ import { arrayMove } from "@dnd-kit/sortable"
 import UseTasks from "../hooks/UseTasks"
 import TaskColumn from "../components/TaskColumn"
 import TaskFormModal from "../components/TaskFormModal"
+import Notification from "../components/Notifications"
 
 const categories = {
   "To-Do": { color: "bg-blue-500" },
@@ -19,6 +20,7 @@ const TaskBoard = () => {
   const [activeTask, setActiveTask] = useState(null)
   const [modalTask, setModalTask] = useState(null)
   const [showAddModal, setShowAddModal] = useState(false)
+  const [notification, setNotification] = useState(null)
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -52,7 +54,6 @@ const TaskBoard = () => {
 
     if (overTask) {
       if (activeTask.category === overTask.category) {
-        // Reordering within the same category
         const tasksInCategory = tasks.filter((t) => t.category === activeTask.category)
         const oldIndex = tasksInCategory.findIndex((t) => t._id === activeTask._id)
         const newIndex = tasksInCategory.findIndex((t) => t._id === overTask._id)
@@ -63,14 +64,14 @@ const TaskBoard = () => {
           taskIds: reorderedTasks.map((t) => t._id),
         })
       } else {
-        // Moving to a different category
         const updatedTask = { ...activeTask, category: overTask.category }
         updateTask.mutate(updatedTask)
+        showNotification(`Task moved to ${overTask.category}`)
       }
     } else {
-      // Dropping onto a column (over.id is the category name)
       const updatedTask = { ...activeTask, category: over.id }
       updateTask.mutate(updatedTask)
+      showNotification(`Task moved to ${over.id}`)
     }
   }
 
@@ -94,6 +95,10 @@ const TaskBoard = () => {
 
   const getTasksByCategory = (category) => {
     return tasks.filter((task) => task.category === category).sort((a, b) => a.order - b.order)
+  }
+
+  const showNotification = (message) => {
+    setNotification(message)
   }
 
   return (
@@ -142,6 +147,8 @@ const TaskBoard = () => {
           />
         )}
       </AnimatePresence>
+
+      <Notification message={notification} onClose={() => setNotification(null)} />
     </div>
   )
 }

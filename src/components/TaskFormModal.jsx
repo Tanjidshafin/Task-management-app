@@ -22,7 +22,6 @@ const TaskFormModal = ({ task, onClose, onSubmit }) => {
             timestamp: formData.timestamp || new Date().toISOString(),
             id: formData.id || Date.now().toString(),
         }
-        console.log("Task saved:", data)
         onSubmit(data)
         onClose()
     }
