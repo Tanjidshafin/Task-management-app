@@ -3,7 +3,7 @@
 </div>
 
 <h1 align="center">
-  <img src="https://readme-typing-svg.herokuapp.com/?lines=🚀+Task+Management+App;Real-time+%26+Interactive;Drag-and-Drop+Functionality&center=true&size=30">
+  <img src="https://readme-typing-svg.herokuapp.com/?lines=🚀+Task+Management+App;Real-time+%26+Interactive;Drag-and-Drop+Functionality&center=true&size=20">
 </h1>
 
 <p align="center">
