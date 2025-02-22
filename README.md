@@ -29,7 +29,7 @@
 | ✅      | **Firebase Authentication** (Google Sign-in)                        |
 | ✅      | **Task CRUD Operations** (Add, Edit, Delete)                        |
 | ✅      | **Drag & Drop** to reorder tasks & move between categories          |
-| ✅      | **Real-time Synchronization** (WebSockets / MongoDB Change Streams) |
+| ✅      | **Real-time Synchronization** (Socket.io) |
 | ✅      | **Responsive & Minimal UI**                                         |
 | 🌙      | **Dark Mode Toggle** (Bonus)                                        |
 | 📅      | **Due Date Indicators** (Bonus)                                     |
