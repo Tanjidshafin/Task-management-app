@@ -1,13 +1,53 @@
+"use client"
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import axios from "axios"
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
+import socket from "../../socketio"
 import { AppContext } from "../context/AppContext"
 
-const API_URL = "https://task-backend-psi-ten.vercel.app"
+
+const API_URL = "https://task-backend-erwi.onrender.com"
 
 const UseTasks = () => {
   const queryClient = useQueryClient()
   const { user } = useContext(AppContext)
+  useEffect(() => {
+    socket.on("taskAdded", (newTask) => {
+      queryClient.setQueryData(["tasks"], (oldTasks) => [...oldTasks, newTask])
+    })
+
+    socket.on("taskDeleted", (deletedTaskId) => {
+      queryClient.setQueryData(["tasks"], (oldTasks) => oldTasks.filter((task) => task._id !== deletedTaskId))
+    })
+
+    socket.on("taskUpdated", (updatedTask) => {
+      queryClient.setQueryData(["tasks"], (oldTasks) =>
+        oldTasks.map((task) => (task._id === updatedTask._id ? updatedTask : task)),
+      )
+    })
+
+    socket.on("tasksReordered", ({ category, taskIds }) => {
+      queryClient.setQueryData(["tasks"], (oldTasks) => {
+        const updatedTasks = [...oldTasks]
+        taskIds.forEach((id, index) => {
+          const taskIndex = updatedTasks.findIndex((task) => task._id === id)
+          if (taskIndex !== -1) {
+            updatedTasks[taskIndex] = { ...updatedTasks[taskIndex], order: index, category }
+          }
+        })
+        return updatedTasks
+      })
+    })
+
+    return () => {
+      socket.off("taskAdded")
+      socket.off("taskDeleted")
+      socket.off("taskUpdated")
+      socket.off("tasksReordered")
+    }
+  }, [queryClient])
+
   const {
     data: tasks = [],
     refetch,
@@ -16,8 +56,8 @@ const UseTasks = () => {
     queryKey: ["tasks"],
     queryFn: async () => {
       const res = await axios.get(`${API_URL}/tasks`)
-      const filteredTasks = res.data.filter(task => task.email === user.email)
-      return filteredTasks
+      const filtered = res.data.filter(task => task.email === user.email)
+      return filtered
     },
   })
 

@@ -11,7 +11,21 @@ const TaskCard = ({ task, onEdit, onDelete }) => {
     transition,
     opacity: isDragging ? 0.5 : 1,
   }
-  const isOverdue = task.dueDate && new Date(task.dueDate) < new Date()
+
+  const getStatusColor = (task) => {
+    if (!task.timestamp) return "text-gray-400 dark:text-gray-500"
+    const taskDate = new Date(task.timestamp).setHours(0, 0, 0, 0)
+    const today = new Date().setHours(0, 0, 0, 0)
+
+    if (taskDate === today) {
+      return "text-green-500"
+    } else if (taskDate < today) {
+      return task.category === "Done" ? "text-green-500" : "text-red-500"
+    } else {
+      return "text-gray-400 dark:text-gray-500"
+    }
+  }
+
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })
   }
@@ -59,10 +73,10 @@ const TaskCard = ({ task, onEdit, onDelete }) => {
       </div>
       <div className="flex items-center justify-between mt-2">
         <span className="text-xs text-gray-400 dark:text-gray-500">{formatDate(task.timestamp)}</span>
-        {task.dueDate && (
-          <div className={`flex items-center text-xs ${isOverdue ? "text-red-500" : "text-green-500"}`}>
+        {task.timestamp && (
+          <div className={`flex items-center text-xs ${getStatusColor(task)}`}>
             <Calendar size={12} className="mr-1" />
-            <span>{formatDate(task.dueDate)}</span>
+            <span>{formatDate(task.timestamp)}</span>
           </div>
         )}
       </div>

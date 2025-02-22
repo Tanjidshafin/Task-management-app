@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
 
-const Notification = ({ message, onClose, color = "green" }) => {
+const Notification = ({ message, onClose }) => {
     return (
         <AnimatePresence>
             {message && (
@@ -9,7 +9,7 @@ const Notification = ({ message, onClose, color = "green" }) => {
                     initial={{ opacity: 0, y: 50, scale: 0.3 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
-                    className={`fixed bottom-4 right-0 sm:right-4 bg-gradient-to-r from-${color}-500 to-${color}-600 text-white p-4 rounded-lg shadow-lg z-50 max-w-sm w-full sm:w-auto`}
+                    className='fixed bottom-4 right-0 sm:right-4 bg-gradient-to-r from-green-500 to-green-600 text-white p-4 rounded-lg shadow-lg z-50 max-w-sm w-full sm:w-auto'
                 >
                     <div className="flex items-center justify-between">
                         <p className="text-sm font-medium mr-8">{message}</p>
