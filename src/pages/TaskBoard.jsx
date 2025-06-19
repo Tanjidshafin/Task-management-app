@@ -16,7 +16,7 @@ const categories = {
 }
 
 const TaskBoard = () => {
-  const { tasks, isFetching, addTask, updateTask, deleteTask, reorderTasks } = UseTasks()
+  const { tasks, isLoading, addTask, updateTask, deleteTask, reorderTasks } = UseTasks()
   const [activeTask, setActiveTask] = useState(null)
   const [modalTask, setModalTask] = useState(null)
   const [showAddModal, setShowAddModal] = useState(false)
@@ -120,7 +120,7 @@ const TaskBoard = () => {
               key={category}
               title={category}
               tasks={getTasksByCategory(category)}
-              isLoading={isFetching}
+              isLoading={isLoading}
               onAddTask={() => setShowAddModal(true)}
               onEditTask={(task) => setModalTask(task)}
               onDeleteTask={handleDeleteTask}

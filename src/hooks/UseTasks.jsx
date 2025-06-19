@@ -51,7 +51,7 @@ const UseTasks = () => {
   const {
     data: tasks = [],
     refetch,
-    isFetching,
+    isLoading,
   } = useQuery({
     queryKey: ["tasks"],
     queryFn: async () => {
@@ -81,7 +81,7 @@ const UseTasks = () => {
     onSuccess: () => queryClient.invalidateQueries(["tasks"]),
   })
 
-  return { tasks, refetch, isFetching, addTask, updateTask, deleteTask, reorderTasks }
+  return { tasks, refetch, isLoading, addTask, updateTask, deleteTask, reorderTasks }
 }
 
 export default UseTasks
