@@ -103,7 +103,9 @@ const TaskBoard = () => {
   const showNotification = (message) => {
     setNotification(message)
   }
-
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })
+  }
   return (
     <div className="min-h-screen pt-20 bg-gray-100 dark:bg-gray-950 p-6">
       <DndContext
@@ -129,10 +131,12 @@ const TaskBoard = () => {
         <DragOverlay>
           {activeTask ? (
             <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border-2 border-blue-500 cursor-grabbing shadow-lg">
-              <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-2">{activeTask.title}</h3>
+              <h3 className="text-sm font-medium text-gray-900 dark:text-white">{activeTask.title}</h3>
               {activeTask.description && (
-                <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 line-clamp-2">{activeTask.description}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-2 mt-1 line-clamp-2">{activeTask.description}</p>
               )}
+
+              <p className="text-xs text-gray-400 dark:text-gray-500">{formatDate(activeTask.timestamp)}</p>
             </div>
           ) : null}
         </DragOverlay>
